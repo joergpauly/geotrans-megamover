@@ -15,6 +15,7 @@ GeoTrans::GeoTrans(QWidget *parent) :
     m_sat = QGeoPositionInfoSource::createDefaultSource(this);
     if(m_sat)
     {
+        QStringList llst = m_sat->availableSources();
         ui->lblState->setText(m_sat->sourceName());
         m_sat->setPreferredPositioningMethods(QGeoPositionInfoSource::SatellitePositioningMethods);
         m_sat->setUpdateInterval(1000);
