@@ -43,8 +43,8 @@ private:
     QUdpSocket *m_socket;         
     QString* m_filename;
     CNmeaGen *m_nmea;
-    QList<QGeoSatelliteInfo> m_inView;
-    QList<QGeoSatelliteInfo> m_inUse;
+    QList<QGeoSatelliteInfo>* m_inView;
+    QList<QGeoSatelliteInfo>* m_inUse;
 };
 
 #endif // GEOTRANS_H

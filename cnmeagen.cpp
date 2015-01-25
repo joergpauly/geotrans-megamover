@@ -103,16 +103,31 @@ void CNmeaGen::setGSA(bool GSA)
 QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
     nmeaRMC *pack = new nmeaRMC();
-    pack->setDeclination(fabs(pos->attribute(QGeoPositionInfo::Attribute::MagneticVariation)));
-    if(pos->attribute(QGeoPositionInfo::Attribute::MagneticVariation) < 0)
+    if(pos->hasAttribute(QGeoPositionInfo::Attribute::MagneticVariation))
     {
-        pack->setDeclin_ew("W");
+        pack->setDeclination(fabs(pos->attribute(QGeoPositionInfo::Attribute::MagneticVariation)));
+        if(pos->attribute(QGeoPositionInfo::Attribute::MagneticVariation) < 0)
+        {
+            pack->setDeclin_ew("W");
+        }
+        else
+        {
+            pack->setDeclin_ew("E");
+        }
     }
     else
     {
-        pack->setDeclin_ew("E");
+        pack->setDeclination(0);
+        pack->setDeclin_ew("");
     }
-    pack->setDirection(pos->attribute(QGeoPositionInfo::Attribute::Direction));
+    if(pos->hasAttribute(QGeoPositionInfo::Attribute::Direction))
+    {
+        pack->setDirection(pos->attribute(QGeoPositionInfo::Attribute::Direction));
+    }
+    else
+    {
+        pack->setDirection(0);
+    }
     if(pos->coordinate().longitude() < 0)
     {
         pack->setEw("W");
@@ -132,7 +147,10 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     }
     pack->setLat(fabs(pos->coordinate().latitude()));
     pack->setMode("A");
-    pack->setSpeed(pos->attribute(QGeoPositionInfo::Attribute::GroundSpeed));
+    if(pos->hasAttribute(QGeoPositionInfo::Attribute::GroundSpeed))
+    {
+        pack->setSpeed(pos->attribute(QGeoPositionInfo::Attribute::GroundSpeed));
+    }
     pack->setUtc(pos->timestamp());
     pack->setStatus("A");
     return pack->makeSentence();
@@ -140,7 +158,42 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
 
 QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
-
+    nmeaGGA *pack = new nmeaGGA();
+    pack->setDgps_age(0);
+    pack->setDiff(0);
+    pack->setDiff_units("");
+    pack->setElv(pos->coordinate().altitude());
+    pack->setElv_units("M");
+    if(pos->hasAttribute(QGeoPositionInfo::Attribute::HorizontalAccuracy))
+    {
+        pack->setHDOP(pos->attribute(QGeoPositionInfo::Attribute::HorizontalAccuracy));
+    }
+    else
+    {
+        pack->setHDOP(0);
+    }
+    pack->setLat(fabs(pos->coordinate().latitude()));
+    if(pos->coordinate().latitude() < 0)
+    {
+        pack->setNs("S");
+    }
+    else
+    {
+        pack->setNs("N");
+    }
+    pack->setLon(fabs(pos->coordinate().longitude()));
+    if(pos->coordinate().longitude() < 0)
+    {
+        pack->setEw("W");
+    }
+    else
+    {
+        pack->setEw("E");
+    }
+    pack->setUtc(pos->timestamp());
+    pack->setSatinuse(pUse->count());
+    pack->setSig(pos->coordinate().type());
+    pack->makeSentence();
 }
 
 QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
@@ -165,12 +218,12 @@ void nmeaGGA::setLat(double value)
     lat = value;
 }
 
-char nmeaGGA::getNs() const
+QString nmeaGGA::getNs() const
 {
     return ns;
 }
 
-void nmeaGGA::setNs(char value)
+void nmeaGGA::setNs(QString value)
 {
     ns = value;
 }
@@ -185,12 +238,12 @@ void nmeaGGA::setLon(double value)
     lon = value;
 }
 
-char nmeaGGA::getEw() const
+QString nmeaGGA::getEw() const
 {
     return ew;
 }
 
-void nmeaGGA::setEw(char value)
+void nmeaGGA::setEw(QString value)
 {
     ew = value;
 }
@@ -235,12 +288,12 @@ void nmeaGGA::setElv(double value)
     elv = value;
 }
 
-char nmeaGGA::getElv_units() const
+QString nmeaGGA::getElv_units() const
 {
     return elv_units;
 }
 
-void nmeaGGA::setElv_units(char value)
+void nmeaGGA::setElv_units(QString value)
 {
     elv_units = value;
 }
@@ -255,12 +308,12 @@ void nmeaGGA::setDiff(double value)
     diff = value;
 }
 
-char nmeaGGA::getDiff_units() const
+QString nmeaGGA::getDiff_units() const
 {
     return diff_units;
 }
 
-void nmeaGGA::setDiff_units(char value)
+void nmeaGGA::setDiff_units(QString value)
 {
     diff_units = value;
 }
@@ -277,7 +330,29 @@ void nmeaGGA::setDgps_age(double value)
 
 QString nmeaGGA::makeSentence()
 {
+    QString lstr = "GPGAA,";
+    lstr.append(getUtc().time().toString("hhmmss") + ",");
+    QString lb = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,,,,*")
+            .arg(getLat())
+            .arg(getNs())
+            .arg(getLon())
+            .arg(getEw())
+            .arg(getSig())
+            .arg(getSatinuse())
+            .arg(getHDOP())
+            .arg(getElv())
+            .arg(getElv_units());
+    lstr.append(lb);
+    int chsum = 0;
+    int it;
+    QByteArray buff = lstr.toLocal8Bit();
 
+    for(it = 0; it < buff.length(); ++it)
+        chsum ^= (int)buff.at(it);
+    lb = QString("%1\n")
+            .arg(chsum,2,16);
+    lstr.append(lb);
+    return lstr;
 }
 
 QDateTime nmeaGGA::getUtc() const
@@ -460,17 +535,19 @@ void nmeaRMC::setMode(const QString &value)
 QString nmeaRMC::makeSentence()
 {
     QString lstr = "GPRMC,";
-    lstr.append(this->getUtc().time().toString("HHmmsszz") + "," + this->getStatus() + ",");
+    lstr.append(this->getUtc().time().toString("HHmmss") + "," + this->getStatus() + ",");
     QString lb = QString("%1,%2,%3,%4,")            
             .arg(getLat())
             .arg(getNs())
             .arg(getLon())
             .arg(getEw());
     lstr.append(lb);
-    lb = QString("%1,%2,%3,%4,%5,%6*")
+    lb = QString("%1,%2,%3,")
             .arg(getSpeed())
             .arg(getDirection())
-            .arg(getUtc().date().toString("ddMMyy"))
+            .arg(getUtc().date().toString("ddMMyy"));
+    lstr.append(lb);
+    lb = QString("%1,%2,%3*")
             .arg(fabs(getDeclination()))
             .arg(getDeclin_ew())
             .arg(getMode());
@@ -481,8 +558,8 @@ QString nmeaRMC::makeSentence()
 
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
-    lb = QString("%1").arg(chsum,2,16);
-    lb.append("\n");
+    lb = QString("%1\n")
+            .arg(chsum,2,16);
     lstr.append(lb);
     return lstr;
 }

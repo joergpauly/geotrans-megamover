@@ -84,16 +84,16 @@ class nmeaGGA
 {
      QDateTime  utc;        /**< UTC of position (just time) */
      double     lat;        /**< Latitude in NDEG - [degree][min].[sec/60] */
-     char       ns;         /**< [N]orth or [S]outh */
+     QString    ns;         /**< [N]orth or [S]outh */
      double     lon;        /**< Longitude in NDEG - [degree][min].[sec/60] */
-     char       ew;         /**< [E]ast or [W]est */
+     QString    ew;         /**< [E]ast or [W]est */
      int        sig;        /**< GPS quality indicator (0 = Invalid; 1 = Fix; 2 = Differential, 3 = Sensitive) */
      int        satinuse;   /**< Number of satellites in use (not those in view) */
      double     HDOP;       /**< Horizontal dilution of precision */
      double     elv;        /**< Antenna altitude above/below mean sea level (geoid) */
-     char       elv_units;  /**< [M]eters (Antenna height unit) */
+     QString    elv_units;  /**< [M]eters (Antenna height unit) */
      double     diff;       /**< Geoidal separation (Diff. between WGS-84 earth ellipsoid and mean sea level. '-' = geoid is below WGS-84 ellipsoid) */
-     char       diff_units; /**< [M]eters (Units of geoidal separation) */
+     QString    diff_units; /**< [M]eters (Units of geoidal separation) */
      double     dgps_age;   /**< Time in seconds since last DGPS update */
      int        dgps_sid;   /**< DGPS station ID number */
 
@@ -102,12 +102,12 @@ public:
      void setUtc(const QDateTime &value);
      double getLat() const;
      void setLat(double value);
-     char getNs() const;
-     void setNs(char value);
+     QString getNs() const;
+     void setNs(QString value);
      double getLon() const;
      void setLon(double value);
-     char getEw() const;
-     void setEw(char value);
+     QString getEw() const;
+     void setEw(QString value);
      int getSig() const;
      void setSig(int value);
      int getSatinuse() const;
@@ -116,12 +116,12 @@ public:
      void setHDOP(double value);
      double getElv() const;
      void setElv(double value);
-     char getElv_units() const;
-     void setElv_units(char value);
+     QString getElv_units() const;
+     void setElv_units(QString value);
      double getDiff() const;
      void setDiff(double value);
-     char getDiff_units() const;
-     void setDiff_units(char value);
+     QString getDiff_units() const;
+     void setDiff_units(QString value);
      double getDgps_age() const;
      void setDgps_age(double value);
      QString makeSentence();

@@ -45,6 +45,8 @@ void GeoTrans::on_cmdQuit_clicked()
 
 void GeoTrans::on_cmdStart_clicked()
 {
+    m_inView = new QList<QGeoSatelliteInfo>();
+    m_inUse = new QList<QGeoSatelliteInfo>();
     m_settings->setValue("IPadr", QVariant(ui->txtIPadr->text()));
     m_settings->setValue("Port", QVariant(ui->txtPort->text()));    
     m_host = new QHostAddress(m_settings->value("IPadr").toString());
@@ -52,14 +54,14 @@ void GeoTrans::on_cmdStart_clicked()
     m_nmea = new CNmeaGen();
     m_nmea->setRMC(true);
     m_nmea->setGSA(false);
-    m_nmea->setGGA(false);
+    m_nmea->setGGA(true);
     m_sat->startUpdates();
     m_satinf->startUpdates();
 }
 
 void GeoTrans::on_Update(const QGeoPositionInfo &update)
 {
-    QString lstr = m_nmea->generate(update, &m_inView, &m_inUse);
+    QString lstr = m_nmea->generate(update, m_inView, m_inUse);
     ui->lblState->setText(lstr);
     m_socket->writeDatagram(lstr.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
 }
@@ -70,10 +72,10 @@ void GeoTrans::on_pushButton_clicked()
 
 void GeoTrans::on_SatUseUpdate(QList<QGeoSatelliteInfo> llist)
 {
-    m_inUse = llist;
+    *m_inUse = llist;
 }
 
 void GeoTrans::on_SatViewUpdate(QList<QGeoSatelliteInfo> llist)
 {
-    m_inView = llist;
+    *m_inView = llist;
 }
