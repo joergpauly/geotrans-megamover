@@ -39,7 +39,7 @@
 CNmeaGen::CNmeaGen()
 {
     m_sRMC = "";
-    m_sGAA = "";
+    m_sGGA = "";
     m_sGSA = "";
 }
 
@@ -57,7 +57,7 @@ void CNmeaGen::generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, Q
 
     if(m_GGA)
     {
-        m_sGAA = makeGGA(&pos, pView, pUse);
+        m_sGGA = makeGGA(&pos, pView, pUse);
     }
 
     if(m_GSA)
@@ -104,14 +104,14 @@ void CNmeaGen::setSRMC(const QString &sRMC)
 {
     m_sRMC = sRMC;
 }
-QString CNmeaGen::sGAA() const
+QString CNmeaGen::sGGA() const
 {
-    return m_sGAA;
+    return m_sGGA;
 }
 
-void CNmeaGen::setSGAA(const QString &sGAA)
+void CNmeaGen::setSGGA(const QString &sGGA)
 {
-    m_sGAA = sGAA;
+    m_sGGA = sGGA;
 }
 QString CNmeaGen::sGSA() const
 {

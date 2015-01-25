@@ -64,8 +64,8 @@ public:
     QString sRMC() const;
     void setSRMC(const QString &sRMC);
 
-    QString sGAA() const;
-    void setSGAA(const QString &sGAA);
+    QString sGGA() const;
+    void setSGGA(const QString &sGGA);
 
     QString sGSA() const;
     void setSGSA(const QString &sGSA);
@@ -75,7 +75,7 @@ private: //Members
     bool m_GGA;
     bool m_GSA;
     QString m_sRMC;
-    QString m_sGAA;
+    QString m_sGGA;
     QString m_sGSA;
 
 private: //Functions
