@@ -453,6 +453,7 @@ QString nmeaGSA::makeSentence()
             .arg(getPDOP())
             .arg(getHDOP())
             .arg(getVDOP());
+    lstr.append(lb);
     int chsum = 0;
     int it;
     QByteArray buff = lstr.toLocal8Bit();
