@@ -104,7 +104,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
 {
     nmeaRMC *pack = new nmeaRMC();
     pack->setDeclination(fabs(pos->attribute(QGeoPositionInfo::MagneticVariation)));
-    if(pos->attribute(QGeoPositionInfo::MagneticVariation) < 0)
+    if(pos->attribute(/*3*/QGeoPositionInfo::Attribute::MagneticVariation) < 0)
     {
         pack->setDeclin_ew("W");
     }
@@ -112,7 +112,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setDeclin_ew("E");
     }
-    pack->setDirection(pos->attribute(QGeoPositionInfo::Direction));
+    pack->setDirection(pos->attribute(/*0*/QGeoPositionInfo::Attribute::Direction));
     if(pos->coordinate().longitude() < 0)
     {
         pack->setEw("W");
@@ -132,7 +132,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     }
     pack->setLat(fabs(pos->coordinate().latitude()));
     pack->setMode("A");
-    pack->setSpeed(pos->attribute(QGeoPositionInfo::GroundSpeed));
+    pack->setSpeed(pos->attribute(/*1*/QGeoPositionInfo::Attribute::GroundSpeed));
     pack->setUtc(pos->timestamp());
     pack->setStatus("A");
     return pack->makeSentence();
@@ -461,17 +461,16 @@ QString nmeaRMC::makeSentence()
 {
     QString lstr = "GPRMC,";
     lstr.append(this->getUtc().time().toString("HHmmsszz") + "," + this->getStatus() + ",");
-    QString lb = QString("%1,%2,%3,%4,")
-            .arg(getLon())
-            .arg(getEw())
+    QString lb = QString("%1,%2,%3,%4,")            
             .arg(getLat())
-            .arg(getNs());
+            .arg(getNs())
+            .arg(getLon())
+            .arg(getEw());
     lstr.append(lb);
-    lb = QString("%1,%2,%3%4,%5,%6,%7*")
+    lb = QString("%1,%2,%3,%4,%5,%6*")
             .arg(getSpeed())
             .arg(getDirection())
-            .arg(getUtc().date().toString("ddMMM"))
-            .arg(getUtc().date().year() - 100)
+            .arg(getUtc().date().toString("ddMMyy"))
             .arg(fabs(getDeclination()))
             .arg(getDeclin_ew())
             .arg(getMode());
