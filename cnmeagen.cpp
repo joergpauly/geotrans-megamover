@@ -103,8 +103,8 @@ void CNmeaGen::setGSA(bool GSA)
 QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
     nmeaRMC *pack = new nmeaRMC();
-    pack->setDeclination(fabs(pos->attribute(QGeoPositionInfo::MagneticVariation)));
-    if(pos->attribute(/*3*/QGeoPositionInfo::Attribute::MagneticVariation) < 0)
+    pack->setDeclination(fabs(pos->attribute(QGeoPositionInfo::Attribute::MagneticVariation)));
+    if(pos->attribute(QGeoPositionInfo::Attribute::MagneticVariation) < 0)
     {
         pack->setDeclin_ew("W");
     }
@@ -112,7 +112,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setDeclin_ew("E");
     }
-    pack->setDirection(pos->attribute(/*0*/QGeoPositionInfo::Attribute::Direction));
+    pack->setDirection(pos->attribute(QGeoPositionInfo::Attribute::Direction));
     if(pos->coordinate().longitude() < 0)
     {
         pack->setEw("W");
@@ -132,7 +132,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     }
     pack->setLat(fabs(pos->coordinate().latitude()));
     pack->setMode("A");
-    pack->setSpeed(pos->attribute(/*1*/QGeoPositionInfo::Attribute::GroundSpeed));
+    pack->setSpeed(pos->attribute(QGeoPositionInfo::Attribute::GroundSpeed));
     pack->setUtc(pos->timestamp());
     pack->setStatus("A");
     return pack->makeSentence();
@@ -481,7 +481,7 @@ QString nmeaRMC::makeSentence()
 
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
-    lb = QString("%1").arg(chsum,2,10);
+    lb = QString("%1").arg(chsum,2,16);
     lb.append("\n");
     lstr.append(lb);
     return lstr;
