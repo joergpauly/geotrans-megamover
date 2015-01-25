@@ -38,6 +38,8 @@
 #define CNMEAGEN_H
 
 #include <stdio.h>
+#include <math.h>
+#include <float.h>
 #include <QString>
 #include <QDateTime>
 #include <QGeoPositionInfo>
