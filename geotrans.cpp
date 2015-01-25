@@ -53,6 +53,7 @@ void GeoTrans::on_cmdStart_clicked()
     m_nmea->setGSA(false);
     m_nmea->setGGA(false);
     m_sat->startUpdates();
+    m_satinf->startUpdates();
 }
 
 void GeoTrans::on_Update(const QGeoPositionInfo &update)

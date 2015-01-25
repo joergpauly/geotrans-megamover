@@ -9,9 +9,7 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QHostAddress>
-#include "nmea/nmea.h"
 #include <QFileDialog>
-#include "cnmeasource.h"
 #include "cnmeagen.h"
 
 
@@ -44,7 +42,6 @@ private:
     QHostAddress *m_host;
     QUdpSocket *m_socket;         
     QString* m_filename;
-    CNmeaSource *m_src;
     CNmeaGen *m_nmea;
     QList<QGeoSatelliteInfo> m_inView;
     QList<QGeoSatelliteInfo> m_inUse;
