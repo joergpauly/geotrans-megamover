@@ -445,25 +445,21 @@ void nmeaGSA::setVDOP(double value)
 
 QString nmeaGSA::makeSentence()
 {
-    QString lstr = "$GPGSA,";
-    lstr.append(getFix_mode() + ",");
-    lstr.append((getFix_type()+1) + ",");
-    lstr.append("0,");
-    QString lb = QString("%1,%2,%3*")
-            .arg(getPDOP())
-            .arg(getHDOP())
-            .arg(getVDOP());
-    lstr.append(lb);
+    QString lgsa = "$GPGSA,";
+    lgsa.append(getFix_mode() + ",");
+    lgsa.append((getFix_type()+1) + ",");
+    QString lb = ",,,,";
+    lgsa.append(lb);
     int chsum = 0;
     int it;
-    QByteArray buff = lstr.toLocal8Bit();
+    QByteArray buff = lgsa.toLocal8Bit();
 
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
     lb = QString("%1")
             .arg(chsum,2,16);
-    lstr.append(lb);
-    return lstr;
+    lgsa.append(lb);
+    return lgsa;
 }
 
 QString nmeaGSA::getFix_mode() const
