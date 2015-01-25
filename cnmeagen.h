@@ -50,7 +50,7 @@ class CNmeaGen
 public:
     CNmeaGen();
     ~CNmeaGen();
-    QString* generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
+    QString generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
 
     bool RMC() const;
     void setRMC(bool RMC);
@@ -67,9 +67,9 @@ private: //Members
     bool m_GSA;
 
 private: //Functions
-    QString* makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
-    QString* makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
-    QString* makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
+    QString makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
+    QString makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
+    QString makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
 
 };
 
@@ -124,7 +124,7 @@ public:
      void setDiff_units(char value);
      double getDgps_age() const;
      void setDgps_age(double value);
-     QString* makeSentence();
+     QString makeSentence();
 };
 
 
@@ -150,7 +150,7 @@ public:
     void setHDOP(double value);
     double getVDOP() const;
     void setVDOP(double value);
-    QString* makeSentence();
+    QString makeSentence();
 };
 
 
@@ -191,7 +191,7 @@ public:
      void setDeclin_ew(const QString &value);
      QString getMode() const;
      void setMode(const QString &value);
-     QString* makeSentence();
+     QString makeSentence();
 };
 
 #endif // CNMEAGEN_H

@@ -59,9 +59,9 @@ void GeoTrans::on_cmdStart_clicked()
 
 void GeoTrans::on_Update(const QGeoPositionInfo &update)
 {
-    QString* lstr = m_nmea->generate(update, &m_inView, &m_inUse);
-    ui->lblState->setText(*lstr);
-    m_socket->writeDatagram(lstr->toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+    QString lstr = m_nmea->generate(update, &m_inView, &m_inUse);
+    ui->lblState->setText(lstr);
+    m_socket->writeDatagram(lstr.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
 }
 
 void GeoTrans::on_pushButton_clicked()

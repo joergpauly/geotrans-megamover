@@ -46,26 +46,26 @@ CNmeaGen::~CNmeaGen()
 
 }
 
-QString *CNmeaGen::generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
+QString CNmeaGen::generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
-    QString* lSentence = new QString();
+    QString lSentence = "$";
 
     if(m_RMC)
     {
-        QString* lrmc = makeRMC(&pos, pView, pUse);
-        lSentence->append(*lrmc);
+        QString lrmc = makeRMC(&pos, pView, pUse);
+        lSentence.append(lrmc);
     }
 
     if(m_GGA)
     {
-        QString* lgga = makeGGA(&pos, pView, pUse);
-        lSentence->append(*lgga);
+        QString lgga = makeGGA(&pos, pView, pUse);
+        lSentence.append(lgga);
     }
 
     if(m_GSA)
     {
-        QString* lgsa = makeGSA(&pos, pView, pUse);
-        lSentence->append(*lgsa);
+        QString lgsa = makeGSA(&pos, pView, pUse);
+        lSentence.append(lgsa);
     }
     return lSentence;
 }
@@ -100,7 +100,7 @@ void CNmeaGen::setGSA(bool GSA)
     m_GSA = GSA;
 }
 
-QString *CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
+QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
     nmeaRMC *pack = new nmeaRMC();
     pack->setDeclination(fabs(pos->attribute(QGeoPositionInfo::MagneticVariation)));
@@ -135,14 +135,15 @@ QString *CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pVie
     pack->setSpeed(pos->attribute(QGeoPositionInfo::GroundSpeed));
     pack->setUtc(pos->timestamp());
     pack->setStatus("A");
+    return pack->makeSentence();
 }
 
-QString *CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
+QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
 
 }
 
-QString *CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
+QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
 
 }
@@ -274,7 +275,7 @@ void nmeaGGA::setDgps_age(double value)
     dgps_age = value;
 }
 
-QString *nmeaGGA::makeSentence()
+QString nmeaGGA::makeSentence()
 {
 
 }
@@ -335,7 +336,7 @@ void nmeaGSA::setVDOP(double value)
     VDOP = value;
 }
 
-QString *nmeaGSA::makeSentence()
+QString nmeaGSA::makeSentence()
 {
 
 }
@@ -456,16 +457,16 @@ void nmeaRMC::setMode(const QString &value)
     mode = value;
 }
 
-QString *nmeaRMC::makeSentence()
+QString nmeaRMC::makeSentence()
 {
-    QString* lstr = new QString("$GPRMC,");
-    lstr->append(this->getUtc().time().toString("HHmmsszz") + "," + this->getStatus() + ",");
+    QString lstr = "GPRMC,";
+    lstr.append(this->getUtc().time().toString("HHmmsszz") + "," + this->getStatus() + ",");
     QString lb = QString("%1,%2,%3,%4,")
             .arg(getLon())
             .arg(getEw())
             .arg(getLat())
             .arg(getNs());
-    lstr->append(lb);
+    lstr.append(lb);
     lb = QString("%1,%2,%3%4,%5,%6,%7*")
             .arg(getSpeed())
             .arg(getDirection())
@@ -474,16 +475,16 @@ QString *nmeaRMC::makeSentence()
             .arg(fabs(getDeclination()))
             .arg(getDeclin_ew())
             .arg(getMode());
-    lstr->append(lb);
+    lstr.append(lb);
     int chsum = 0;
     int it;
-    QByteArray buff = lstr->toLocal8Bit();
+    QByteArray buff = lstr.toLocal8Bit();
 
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
     lb = QString("%1").arg(chsum,2,10);
     lb.append("\n");
-    lstr->append(lb);
+    lstr.append(lb);
     return lstr;
 }
 
