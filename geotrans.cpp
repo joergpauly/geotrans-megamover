@@ -54,7 +54,7 @@ void GeoTrans::on_cmdStart_clicked()
     m_nmea = new CNmeaGen();
     m_nmea->setRMC(true);
     m_nmea->setGSA(false);
-    m_nmea->setGGA(false);
+    m_nmea->setGGA(true);
     m_sat->startUpdates();
     m_satinf->startUpdates();
 }

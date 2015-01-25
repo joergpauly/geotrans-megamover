@@ -219,7 +219,7 @@ QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     pack->setUtc(pos->timestamp());
     pack->setSatinuse(pUse->count());
     pack->setSig(pos->coordinate().type());
-    pack->makeSentence();
+    return pack->makeSentence();
 }
 
 QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
