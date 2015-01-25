@@ -73,7 +73,7 @@ void GeoTrans::on_Update(const QGeoPositionInfo &update)
     if(lgga.length() > 6)
     {
         m_socket->writeDatagram(lgga.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
-        ui->txtState->append(lgaa);
+        ui->txtState->append(lgga);
     }
 
     QString lgsa = m_nmea->sGSA();
