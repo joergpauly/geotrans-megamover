@@ -224,7 +224,13 @@ QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
 
 QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
-
+    nmeaGSA *pack = new nmeaGSA();
+    pack->setFix_mode("A");
+    pack->setHDOP(pos->HorizontalAccuracy);
+    pack->setFix_type(pos->coordinate().type());
+    pack->setVDOP(pos->attribute(QGeoPositionInfo::Attribute::VerticalAccuracy));
+    pack->setPDOP(pack->getHDOP()+pack->getVDOP());
+    return pack->makeSentence();
 }
 
 
@@ -439,7 +445,24 @@ void nmeaGSA::setVDOP(double value)
 
 QString nmeaGSA::makeSentence()
 {
+    QString lstr = "$GPGSA,";
+    lstr.append(getFix_mode() + ",");
+    lstr.append((getFix_type()+1) + ",");
+    lstr.append("0,");
+    QString lb = QString("%1,%2,%3*")
+            .arg(getPDOP())
+            .arg(getHDOP())
+            .arg(getVDOP());
+    int chsum = 0;
+    int it;
+    QByteArray buff = lstr.toLocal8Bit();
 
+    for(it = 0; it < buff.length(); ++it)
+        chsum ^= (int)buff.at(it);
+    lb = QString("%1")
+            .arg(chsum,2,16);
+    lstr.append(lb);
+    return lstr;
 }
 
 QString nmeaGSA::getFix_mode() const
