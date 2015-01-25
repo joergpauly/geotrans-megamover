@@ -48,7 +48,7 @@ CNmeaGen::~CNmeaGen()
 
 QString CNmeaGen::generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
-    QString lSentence = "$";
+    QString lSentence = "";
 
     if(m_RMC)
     {
@@ -330,7 +330,7 @@ void nmeaGGA::setDgps_age(double value)
 
 QString nmeaGGA::makeSentence()
 {
-    QString lstr = "GPGAA,";
+    QString lstr = "$GPGAA,";
     lstr.append(getUtc().time().toString("hhmmss") + ",");
     QString lb = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,,,,*")
             .arg(getLat())
@@ -534,7 +534,7 @@ void nmeaRMC::setMode(const QString &value)
 
 QString nmeaRMC::makeSentence()
 {
-    QString lstr = "GPRMC,";
+    QString lstr = "$GPRMC,";
     lstr.append(this->getUtc().time().toString("HHmmss") + "," + this->getStatus() + ",");
     QString lb = QString("%1,%2,%3,%4,")            
             .arg(getLat())
