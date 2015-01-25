@@ -50,7 +50,7 @@ class CNmeaGen
 public:
     CNmeaGen();
     ~CNmeaGen();
-    QString generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
+    void generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
 
     bool RMC() const;
     void setRMC(bool RMC);
@@ -61,10 +61,22 @@ public:
     bool GSA() const;
     void setGSA(bool GSA);
 
+    QString sRMC() const;
+    void setSRMC(const QString &sRMC);
+
+    QString sGAA() const;
+    void setSGAA(const QString &sGAA);
+
+    QString sGSA() const;
+    void setSGSA(const QString &sGSA);
+
 private: //Members
     bool m_RMC;
     bool m_GGA;
     bool m_GSA;
+    QString m_sRMC;
+    QString m_sGAA;
+    QString m_sGSA;
 
 private: //Functions
     QString makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);

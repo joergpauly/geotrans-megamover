@@ -61,9 +61,14 @@ void GeoTrans::on_cmdStart_clicked()
 
 void GeoTrans::on_Update(const QGeoPositionInfo &update)
 {
-    QString lstr = m_nmea->generate(update, m_inView, m_inUse);
-    ui->lblState->setText(lstr);
-    m_socket->writeDatagram(lstr.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+    m_nmea->generate(update, m_inView, m_inUse);
+    QString lrmc = m_nmea->sRMC();
+    m_socket->writeDatagram(lrmc.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+    QString lgaa = m_nmea->sGAA();
+    m_socket->writeDatagram(lgaa.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+    QString lgsa = m_nmea->sGSA();
+    m_socket->writeDatagram(lgsa.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+    ui->lblState->setText(lrmc+lgaa+lgsa);
 }
 
 void GeoTrans::on_pushButton_clicked()

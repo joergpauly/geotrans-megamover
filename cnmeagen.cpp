@@ -46,28 +46,22 @@ CNmeaGen::~CNmeaGen()
 
 }
 
-QString CNmeaGen::generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
-{
-    QString lSentence = "";
-
+void CNmeaGen::generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
+{    
     if(m_RMC)
     {
-        QString lrmc = makeRMC(&pos, pView, pUse);
-        lSentence.append(lrmc);
+        m_sRMC = makeRMC(&pos, pView, pUse);
     }
 
     if(m_GGA)
     {
-        QString lgga = makeGGA(&pos, pView, pUse);
-        lSentence.append(lgga);
+        m_sGAA = makeGGA(&pos, pView, pUse);
     }
 
     if(m_GSA)
     {
-        QString lgsa = makeGSA(&pos, pView, pUse);
-        lSentence.append(lgsa);
-    }
-    return lSentence;
+        m_sGSA = makeGSA(&pos, pView, pUse);
+    }    
 }
 
 bool CNmeaGen::RMC() const
@@ -99,6 +93,36 @@ void CNmeaGen::setGSA(bool GSA)
 {
     m_GSA = GSA;
 }
+QString CNmeaGen::sRMC() const
+{
+    return m_sRMC;
+}
+
+void CNmeaGen::setSRMC(const QString &sRMC)
+{
+    m_sRMC = sRMC;
+}
+QString CNmeaGen::sGAA() const
+{
+    return m_sGAA;
+}
+
+void CNmeaGen::setSGAA(const QString &sGAA)
+{
+    m_sGAA = sGAA;
+}
+QString CNmeaGen::sGSA() const
+{
+    return m_sGSA;
+}
+
+void CNmeaGen::setSGSA(const QString &sGSA)
+{
+    m_sGSA = sGSA;
+}
+
+
+
 
 QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
 {
