@@ -38,7 +38,9 @@
 
 CNmeaGen::CNmeaGen()
 {
-
+    m_sRMC = "";
+    m_sGAA = "";
+    m_sGSA = "";
 }
 
 CNmeaGen::~CNmeaGen()
@@ -160,7 +162,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setEw("E");
     }
-    pack->setLon(fabs(pos->coordinate().longitude()));
+    pack->setLon(fabs(pos->coordinate().longitude()*100));
     if(pos->coordinate().latitude() < 0)
     {
         pack->setNs("S");
@@ -169,7 +171,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setNs("N");
     }
-    pack->setLat(fabs(pos->coordinate().latitude()));
+    pack->setLat(fabs(pos->coordinate().latitude()*100));
     pack->setMode("A");
     if(pos->hasAttribute(QGeoPositionInfo::Attribute::GroundSpeed))
     {
@@ -196,7 +198,7 @@ QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setHDOP(0);
     }
-    pack->setLat(fabs(pos->coordinate().latitude()));
+    pack->setLat(fabs(pos->coordinate().latitude()*100));
     if(pos->coordinate().latitude() < 0)
     {
         pack->setNs("S");
@@ -205,7 +207,7 @@ QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setNs("N");
     }
-    pack->setLon(fabs(pos->coordinate().longitude()));
+    pack->setLon(fabs(pos->coordinate().longitude()*100));
     if(pos->coordinate().longitude() < 0)
     {
         pack->setEw("W");
@@ -373,7 +375,7 @@ QString nmeaGGA::makeSentence()
 
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
-    lb = QString("%1\n")
+    lb = QString("%1")
             .arg(chsum,2,16);
     lstr.append(lb);
     return lstr;
@@ -582,7 +584,7 @@ QString nmeaRMC::makeSentence()
 
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
-    lb = QString("%1\n")
+    lb = QString("%1")
             .arg(chsum,2,16);
     lstr.append(lb);
     return lstr;

@@ -16,7 +16,7 @@ GeoTrans::GeoTrans(QWidget *parent) :
     if(m_sat)
     {
         QStringList llst = m_sat->availableSources();
-        ui->lblState->setText(m_sat->sourceName());
+        ui->txtState->append(m_sat->sourceName());
         m_sat->setPreferredPositioningMethods(QGeoPositionInfoSource::SatellitePositioningMethods);
         m_sat->setUpdateInterval(1000);
     }
@@ -64,11 +64,13 @@ void GeoTrans::on_Update(const QGeoPositionInfo &update)
     m_nmea->generate(update, m_inView, m_inUse);
     QString lrmc = m_nmea->sRMC();
     m_socket->writeDatagram(lrmc.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+    ui->txtState->append(lrmc);
     QString lgaa = m_nmea->sGAA();
     m_socket->writeDatagram(lgaa.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+    ui->txtState->append(lgaa);
     QString lgsa = m_nmea->sGSA();
     m_socket->writeDatagram(lgsa.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
-    ui->lblState->setText(lrmc+lgaa+lgsa);
+    ui->txtState->append(lgsa);
 }
 
 void GeoTrans::on_pushButton_clicked()
