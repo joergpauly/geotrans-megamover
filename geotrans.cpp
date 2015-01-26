@@ -61,6 +61,9 @@ void GeoTrans::on_cmdStart_clicked()
 
 void GeoTrans::on_Update(const QGeoPositionInfo &update)
 {
+    m_nmea->setSGSA("");
+    m_nmea->setSGGA("");
+    m_nmea->setSRMC("");
     m_nmea->generate(update, m_inView, m_inUse);
     QString lrmc = m_nmea->sRMC();
     if(lrmc.length() > 6)

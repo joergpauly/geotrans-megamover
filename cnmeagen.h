@@ -144,12 +144,12 @@ public:
 
 class nmeaGSA
 {
-    QString fix_mode;   /**< Mode (M = Manual, forced to operate in 2D or 3D; A = Automatic, 3D/2D) */
-    int     fix_type;   /**< Type, used for navigation (1 = Fix not available; 2 = 2D; 3 = 3D) */
-    int     sat_prn;    /**< PRNs of satellites used in position fix (null for unused fields) */
-    double  PDOP;       /**< Dilution of precision */
-    double  HDOP;       /**< Horizontal dilution of precision */
-    double  VDOP;       /**< Vertical dilution of precision */
+    QString         fix_mode;   /**< Mode (M = Manual, forced to operate in 2D or 3D; A = Automatic, 3D/2D) */
+    int             fix_type;   /**< Type, used for navigation (1 = Fix not available; 2 = 2D; 3 = 3D) */
+    QList<int>      sat_prn;    /**< PRNs of satellites used in position fix (null for unused fields) */
+    double          PDOP;       /**< Dilution of precision */
+    double          HDOP;       /**< Horizontal dilution of precision */
+    double          VDOP;       /**< Vertical dilution of precision */
 
 public:
     QString getFix_mode() const;
@@ -163,13 +163,15 @@ public:
     double getVDOP() const;
     void setVDOP(double value);
     QString makeSentence();
+    QList<int> getSat_prn() const;
+    void setSat_prn(const QList<int> &value);
 };
 
 
 class nmeaRMC
 {
-     QDateTime  utc;       /**< UTC of position */
-     QString    status;     /**< Status (A = active or V = void) */
+    QDateTime  utc;       /**< UTC of position */
+    QString    status;     /**< Status (A = active or V = void) */
      double     lat;        /**< Latitude in NDEG - [degree][min].[sec/60] */
      QString    ns;         /**< [N]orth or [S]outh */
      double     lon;        /**< Longitude in NDEG - [degree][min].[sec/60] */

@@ -52,17 +52,17 @@ void CNmeaGen::generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, Q
 {    
     if(m_RMC)
     {
-        m_sRMC = makeRMC(&pos, pView, pUse);
+        setSRMC(makeRMC(&pos, pView, pUse));
     }
 
     if(m_GGA)
     {
-        m_sGGA = makeGGA(&pos, pView, pUse);
+        setSGGA(makeGGA(&pos, pView, pUse));
     }
 
     if(m_GSA)
     {
-        m_sGSA = makeGSA(&pos, pView, pUse);
+        setSGSA(makeGSA(&pos, pView, pUse));
     }    
 }
 
@@ -104,6 +104,7 @@ void CNmeaGen::setSRMC(const QString &sRMC)
 {
     m_sRMC = sRMC;
 }
+
 QString CNmeaGen::sGGA() const
 {
     return m_sGGA;
@@ -113,6 +114,7 @@ void CNmeaGen::setSGGA(const QString &sGGA)
 {
     m_sGGA = sGGA;
 }
+
 QString CNmeaGen::sGSA() const
 {
     return m_sGSA;
@@ -226,10 +228,30 @@ QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
 {
     nmeaGSA *pack = new nmeaGSA();
     pack->setFix_mode("A");
-    pack->setHDOP(pos->HorizontalAccuracy);
+    if(pos->hasAttribute(QGeoPositionInfo::Attribute::HorizontalAccuracy))
+    {
+        pack->setHDOP(pos->attribute(QGeoPositionInfo::Attribute::HorizontalAccuracy));
+    }
+    else
+    {
+        pack->setHDOP(0);
+    }
     pack->setFix_type(pos->coordinate().type());
-    pack->setVDOP(pos->attribute(QGeoPositionInfo::Attribute::VerticalAccuracy));
+    if(pos->hasAttribute(QGeoPositionInfo::Attribute::VerticalAccuracy))
+    {
+        pack->setVDOP(pos->attribute(QGeoPositionInfo::Attribute::VerticalAccuracy));
+    }
+    else
+    {
+        pack->setVDOP(0);
+    }
     pack->setPDOP(pack->getHDOP()+pack->getVDOP());
+    QList<int> satlst;
+    for(int cnt = 0; cnt < pUse->count(); cnt++)
+    {
+        satlst.append(pUse->at(cnt).satelliteIdentifier());
+    }
+    pack->setSat_prn(satlst);
     return pack->makeSentence();
 }
 
@@ -363,11 +385,26 @@ void nmeaGGA::setDgps_age(double value)
 QString nmeaGGA::makeSentence()
 {
     QString lstr = "$GPGAA,";
-    lstr.append(getUtc().time().toString("hhmmss") + ",");
+    lstr.append(getUtc().time().toString("hhmmss") + ".00,");
+    QString llat = QString::number(getLat());
+    if(getLat() < 1000)
+    {
+        llat = "0" + llat;
+    }
+    QString llon = QString::number(getLon());
+    if(getLon() < 10000)
+    {
+        llon = ("0" + llon);
+    }
+    if(getLon() < 1000)
+    {
+        llon = ("0" + llon);
+    }
+
     QString lb = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,,,,*")
-            .arg(getLat())
+            .arg(llat)
             .arg(getNs())
-            .arg(getLon())
+            .arg(llon)
             .arg(getEw())
             .arg(getSig())
             .arg(getSatinuse())
@@ -382,7 +419,7 @@ QString nmeaGGA::makeSentence()
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
     lb = QString("%1")
-            .arg(chsum,2,16);
+            .arg(chsum,2,16,'0');
     lstr.append(lb);
     return lstr;
 }
@@ -446,10 +483,51 @@ void nmeaGSA::setVDOP(double value)
 QString nmeaGSA::makeSentence()
 {
     QString lgsa = "$GPGSA,";
+    QString lb;
     lgsa.append(getFix_mode() + ",");
-    lgsa.append((getFix_type()+1) + ",");
-    QString lb = ",,,,";
-    lgsa.append(lb);
+    lgsa.append("3,");
+    int cnt;
+    QList<int> satlst = getSat_prn();
+    for(cnt = 0; cnt < satlst.count(); cnt++)
+    {
+        QString satid = QString("%1,").arg(satlst.at(cnt));
+        lgsa.append(satid);
+    }
+    for(cnt = 0; cnt < (12 - satlst.count()); cnt++)
+    {
+        lgsa.append(",");
+    }
+    if(getPDOP() > 0)
+    {
+        lb = QString("%1,").arg(getPDOP());
+        lgsa.append(lb);
+    }
+    else
+    {
+        lgsa.append(",");
+    }
+
+    if(getHDOP() > 0)
+    {
+        lb = QString("%1,").arg(getHDOP());
+        lgsa.append(lb);
+    }
+    else
+    {
+        lgsa.append(",");
+    }
+
+    if(getVDOP() > 0)
+    {
+        lb = QString("%1,").arg(getVDOP());
+        lgsa.append(lb);
+    }
+    else
+    {
+        lgsa.append(",");
+    }
+    lgsa.append("*");
+
     int chsum = 0;
     int it;
     QByteArray buff = lgsa.toLocal8Bit();
@@ -457,9 +535,20 @@ QString nmeaGSA::makeSentence()
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
     lb = QString("%1")
-            .arg(chsum,2,16);
+            .arg(chsum,2,16,'0');
     lgsa.append(lb);
     return lgsa;
+}
+
+
+QList<int> nmeaGSA::getSat_prn() const
+{
+    return sat_prn;
+}
+
+void nmeaGSA::setSat_prn(const QList<int> &value)
+{
+    sat_prn = value;
 }
 
 QString nmeaGSA::getFix_mode() const
@@ -580,12 +669,41 @@ void nmeaRMC::setMode(const QString &value)
 
 QString nmeaRMC::makeSentence()
 {
+    /* $GPRMC,
+    UTC     HHMMSS.00,
+    Staus   A,
+    Lat     DDMM.XXXX,
+    LtHm    N,
+    Lon     DDDMM.XXXX,
+    LnHm    E,
+    Speed   0,
+    Hdg     000,
+    Date    DDMMYY,
+    Var     o.oo,
+    VarHm   E
+    ChkSm   *XX
+    */
     QString lstr = "$GPRMC,";
-    lstr.append(this->getUtc().time().toString("HHmmss") + "," + this->getStatus() + ",");
+    lstr.append(this->getUtc().time().toString("HHmmss") + ".00," + this->getStatus() + ",");
+    QString llat = QString::number(getLat());
+    if(getLat() < 1000)
+    {
+        llat = "0" + llat;
+    }
+    QString llon = QString::number(getLon());
+    if(getLon() < 10000)
+    {
+        llon = ("0" + llon);
+    }
+    if(getLon() < 1000)
+    {
+        llon = ("0" + llon);
+    }
+
     QString lb = QString("%1,%2,%3,%4,")            
-            .arg(getLat())
+            .arg(llat)
             .arg(getNs())
-            .arg(getLon())
+            .arg(llon)
             .arg(getEw());
     lstr.append(lb);
     lb = QString("%1,%2,%3,")
@@ -593,10 +711,7 @@ QString nmeaRMC::makeSentence()
             .arg(getDirection())
             .arg(getUtc().date().toString("ddMMyy"));
     lstr.append(lb);
-    lb = QString("%1,%2,%3*")
-            .arg(fabs(getDeclination()))
-            .arg(getDeclin_ew())
-            .arg(getMode());
+    lb = QString("0,E*");
     lstr.append(lb);
     int chsum = 0;
     int it;
@@ -605,7 +720,7 @@ QString nmeaRMC::makeSentence()
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
     lb = QString("%1")
-            .arg(chsum,2,16);
+            .arg(chsum,2,16,'0');
     lstr.append(lb);
     return lstr;
 }
