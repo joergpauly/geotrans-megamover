@@ -384,7 +384,7 @@ void nmeaGGA::setDgps_age(double value)
 
 QString nmeaGGA::makeSentence()
 {
-    QString lstr = "$GPGAA,";
+    QString lstr = "GPGAA,";
     lstr.append(getUtc().time().toString("hhmmss") + ".00,");
     QString llat = QString::number(getLat());
     if(getLat() < 1000)
@@ -420,7 +420,13 @@ QString nmeaGGA::makeSentence()
         chsum ^= (int)buff.at(it);
     lb = QString("%1")
             .arg(chsum,2,16,'0');
+    if(lb.left(1) == " ")
+    {
+        lb = "0" + (lb.right(1));
+    }
+    lb = lb.toUpper();
     lstr.append(lb);
+    lstr = "$" + lstr;
     return lstr;
 }
 
@@ -482,7 +488,7 @@ void nmeaGSA::setVDOP(double value)
 
 QString nmeaGSA::makeSentence()
 {
-    QString lgsa = "$GPGSA,";
+    QString lgsa = "GPGSA,";
     QString lb;
     lgsa.append(getFix_mode() + ",");
     lgsa.append("3,");
@@ -525,8 +531,7 @@ QString nmeaGSA::makeSentence()
     else
     {
         lgsa.append(",");
-    }
-    lgsa.append("*");
+    }    
 
     int chsum = 0;
     int it;
@@ -534,9 +539,15 @@ QString nmeaGSA::makeSentence()
 
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
-    lb = QString("%1")
+    lb = QString("*%1")
             .arg(chsum,2,16,'0');
+    if(lb.left(1) == " ")
+    {
+        lb = "0" + (lb.right(1));
+    }
+    lb = lb.toUpper();
     lgsa.append(lb);
+    lgsa = "$" + lgsa;
     return lgsa;
 }
 
@@ -683,7 +694,7 @@ QString nmeaRMC::makeSentence()
     VarHm   E
     ChkSm   *XX
     */
-    QString lstr = "$GPRMC,";
+    QString lstr = "GPRMC,";
     lstr.append(this->getUtc().time().toString("HHmmss") + ".00," + this->getStatus() + ",");
     QString llat = QString::number(getLat());
     if(getLat() < 1000)
@@ -711,7 +722,7 @@ QString nmeaRMC::makeSentence()
             .arg(getDirection())
             .arg(getUtc().date().toString("ddMMyy"));
     lstr.append(lb);
-    lb = QString("0,E*");
+    lb = QString("0,E");
     lstr.append(lb);
     int chsum = 0;
     int it;
@@ -719,9 +730,15 @@ QString nmeaRMC::makeSentence()
 
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
-    lb = QString("%1")
+    lb = QString("*%1")
             .arg(chsum,2,16,'0');
+    if(lb.left(1) == " ")
+    {
+        lb = "0" + (lb.right(1));
+    }
+    lb = lb.toUpper();
     lstr.append(lb);
+    lstr = "$" + lstr;
     return lstr;
 }
 
