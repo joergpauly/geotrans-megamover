@@ -419,10 +419,10 @@ QString nmeaGGA::makeSentence()
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
     lb = QString("%1")
-            .arg(chsum,2,16,'0');
-    if(lb.left(1) == " ")
+            .arg(chsum,0,16);
+    if(lb.length() == 1)
     {
-        lb = "0" + (lb.right(1));
+        lb = "0" + lb;
     }
     lb = lb.toUpper();
     lstr.append(lb);
@@ -540,10 +540,10 @@ QString nmeaGSA::makeSentence()
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
     lb = QString("*%1")
-            .arg(chsum,2,16,'0');
-    if(lb.left(1) == " ")
+            .arg(chsum,0,16);
+    if(lb.length() == 1)
     {
-        lb = "0" + (lb.right(1));
+        lb = "0" + lb;
     }
     lb = lb.toUpper();
     lgsa.append(lb);
@@ -722,7 +722,7 @@ QString nmeaRMC::makeSentence()
             .arg(getDirection())
             .arg(getUtc().date().toString("ddMMyy"));
     lstr.append(lb);
-    lb = QString("0,E");
+    lb = QString("0,E,");
     lstr.append(lb);
     int chsum = 0;
     int it;
@@ -731,10 +731,10 @@ QString nmeaRMC::makeSentence()
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
     lb = QString("*%1")
-            .arg(chsum,2,16,'0');
-    if(lb.left(1) == " ")
+            .arg(chsum,0,16);
+    if(lb.length() == 1)
     {
-        lb = "0" + (lb.right(1));
+        lb = "0" + lb;
     }
     lb = lb.toUpper();
     lstr.append(lb);

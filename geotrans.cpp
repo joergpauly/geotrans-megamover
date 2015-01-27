@@ -68,7 +68,7 @@ void GeoTrans::on_Update(const QGeoPositionInfo &update)
     QString lrmc = m_nmea->sRMC();
     if(lrmc.length() > 6)
     {
-        m_socket->writeDatagram(lrmc.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+        m_socket->writeDatagram(lrmc.toLocal8Bit().append("\n",*m_host,m_settings->value("Port").toInt());
         ui->txtState->append(lrmc);
     }
 
