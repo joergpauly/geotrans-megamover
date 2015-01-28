@@ -525,13 +525,10 @@ QString nmeaGSA::makeSentence()
 
     if(getVDOP() > 0)
     {
-        lb = QString("%1,").arg(getVDOP());
+        lb = QString("%1").arg(getVDOP());
         lgsa.append(lb);
     }
-    else
-    {
-        lgsa.append(",");
-    }    
+
 
     int chsum = 0;
     int it;
@@ -730,7 +727,7 @@ QString nmeaRMC::makeSentence()
 
     for(it = 0; it < buff.length(); ++it)
         chsum ^= (int)buff.at(it);
-    lb = QString("*%1")
+    lb = QString("A*%1")
             .arg(chsum,0,16);
     if(lb.length() == 1)
     {

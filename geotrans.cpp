@@ -68,21 +68,30 @@ void GeoTrans::on_Update(const QGeoPositionInfo &update)
     QString lrmc = m_nmea->sRMC();
     if(lrmc.length() > 6)
     {
-        m_socket->writeDatagram(lrmc.toLocal8Bit().append("\n",*m_host,m_settings->value("Port").toInt());
+        QByteArray lbuf = lrmc.toLocal8Bit();
+        lbuf.append(10);
+        lbuf.append(13);
+        m_socket->writeDatagram(lbuf,*m_host,m_settings->value("Port").toInt());
         ui->txtState->append(lrmc);
     }
 
     QString lgga = m_nmea->sGGA();
     if(lgga.length() > 6)
     {
-        m_socket->writeDatagram(lgga.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+        QByteArray lbuf = lgga.toLocal8Bit();
+        lbuf.append(10);
+        lbuf.append(13);
+        m_socket->writeDatagram(lbuf,*m_host,m_settings->value("Port").toInt());
         ui->txtState->append(lgga);
     }
 
     QString lgsa = m_nmea->sGSA();
     if(lgsa.length() > 6)
     {
-        m_socket->writeDatagram(lgsa.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+        QByteArray lbuf = lgsa.toLocal8Bit();
+        lbuf.append(10);
+        lbuf.append(13);
+        m_socket->writeDatagram(lbuf,*m_host,m_settings->value("Port").toInt());
         ui->txtState->append(lgsa);
     }
 }
