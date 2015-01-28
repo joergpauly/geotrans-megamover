@@ -61,6 +61,8 @@ void GeoTrans::on_cmdStart_clicked()
 
 void GeoTrans::on_Update(const QGeoPositionInfo &update)
 {
+    QString lpos = QString("%1     %2").arg(update.coordinate().latitude()).arg(update.coordinate().longitude());
+    m_socket->writeDatagram(lpos.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
     m_nmea->setSGSA("");
     m_nmea->setSGGA("");
     m_nmea->setSRMC("");
@@ -94,10 +96,6 @@ void GeoTrans::on_Update(const QGeoPositionInfo &update)
         m_socket->writeDatagram(lbuf,*m_host,m_settings->value("Port").toInt());
         ui->txtState->append(lgsa);
     }
-}
-
-void GeoTrans::on_pushButton_clicked()
-{
 }
 
 void GeoTrans::on_SatUseUpdate(QList<QGeoSatelliteInfo> llist)

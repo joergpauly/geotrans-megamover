@@ -28,8 +28,7 @@ public:
 private slots:
     void on_cmdQuit_clicked();
     void on_cmdStart_clicked();
-    void on_Update(const QGeoPositionInfo &update);
-    void on_pushButton_clicked();
+    void on_Update(const QGeoPositionInfo &update);    
     void on_SatUseUpdate(QList<QGeoSatelliteInfo> llist);
     void on_SatViewUpdate(QList<QGeoSatelliteInfo> llist);
 
