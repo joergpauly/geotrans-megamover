@@ -49,7 +49,8 @@ CNmeaGen::~CNmeaGen()
 }
 
 void CNmeaGen::generate(QGeoPositionInfo pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
-{    
+{
+    makeLatLon(pos.coordinate());
     if(m_RMC)
     {
         setSRMC(makeRMC(&pos, pView, pUse));
@@ -129,7 +130,7 @@ void CNmeaGen::setSGSA(const QString &sGSA)
 
 
 QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
-{
+{    
     nmeaRMC *pack = new nmeaRMC();
     if(pos->hasAttribute(QGeoPositionInfo::Attribute::MagneticVariation))
     {
@@ -181,7 +182,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     }
     pack->setUtc(pos->timestamp());
     pack->setStatus("A");
-    return pack->makeSentence();
+    return pack->makeSentence(m_lat, m_lon);
 }
 
 QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
@@ -221,7 +222,7 @@ QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     pack->setUtc(pos->timestamp());
     pack->setSatinuse(pUse->count());
     pack->setSig(pos->coordinate().type());
-    return pack->makeSentence();
+    return pack->makeSentence(m_lat, m_lon);
 }
 
 QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse)
@@ -253,6 +254,61 @@ QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     }
     pack->setSat_prn(satlst);
     return pack->makeSentence();
+}
+
+void CNmeaGen::makeLatLon(QGeoCoordinate pos)
+{
+    QString lpstring = pos.toString(QGeoCoordinate::CoordinateFormat::DegreesMinutes);
+    int lpos = lpstring.compare("°");
+    int lLatDeg = fabs(lpstring.toInt());
+    QString lbuf = "";
+    if(lLatDeg < 10)
+    {
+        lbuf = "0";
+    }
+    lbuf.append(QString("%1").arg(lLatDeg));
+    lpstring = lpstring.right(lpstring.length() - lpos);
+
+    int lLatMin = lpstring.toInt();
+    if(lLatMin < 10)
+    {
+        lbuf.append("0");
+    }
+    lbuf.append(QString("%1.").arg(lLatMin));
+    lpos = lpstring.compare(".");
+    lpstring = lpstring.right(lpstring.length() - lpos);
+
+    int lLatMdec = lpstring.toInt();
+    lbuf.append(QString("%1").arg(lLatMdec));
+    m_lat = lbuf;
+    lpstring = lpstring.right(lpstring.length() - (lpos + 1));
+
+    lbuf = "";
+    lpos = lpstring.compare("°");
+    int lLonDeg = fabs(lpstring.toInt());
+    if(lLonDeg < 100)
+    {
+        lbuf = "0";
+    }
+    if(lLonDeg < 10)
+    {
+        lbuf = "00";
+    }
+    lbuf.append(QString("%1").arg(lLonDeg));
+    lpstring = lpstring.right(lpstring.length() - lpos);
+
+    int lLonMin = lpstring.toInt();
+    if(lLonMin < 10)
+    {
+        lbuf.append("0");
+    }
+    lbuf.append(QString("%1.").arg(lLonMin));
+    lpos = lpstring.compare(".");
+    lpstring = lpstring.right(lpstring.length() - lpos);
+    int lLonMdec = lpstring.toInt();
+    lbuf.append(QString("%1").arg(lLonMdec));
+    m_lon = lbuf;
+
 }
 
 
@@ -420,7 +476,7 @@ void nmeaGGA::setDgps_age(double value)
     dgps_age = value;
 }
 
-QString nmeaGGA::makeSentence()
+QString nmeaGGA::makeSentence(QString pLat, QString pLon)
 {
     QString lstr = "GPGAA,";
     lstr.append(getUtc().time().toString("hhmmss") + ".00,");
@@ -428,9 +484,9 @@ QString nmeaGGA::makeSentence()
     QString llon = getS_lon();
 
     QString lb = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,,,,*")
-            .arg(llat)
+            .arg(pLat)
             .arg(getNs())
-            .arg(llon)
+            .arg(pLon)
             .arg(getEw())
             .arg(getSig())
             .arg(getSatinuse())
@@ -759,7 +815,7 @@ void nmeaRMC::setMode(const QString &value)
     mode = value;
 }
 
-QString nmeaRMC::makeSentence()
+QString nmeaRMC::makeSentence(QString pLat, QString pLon)
 {
     /* $GPRMC,
     UTC     HHMMSS.00,
@@ -777,13 +833,30 @@ QString nmeaRMC::makeSentence()
     */
     QString lstr = "GPRMC,";
     lstr.append(this->getUtc().time().toString("HHmmss") + ".00," + this->getStatus() + ",");
+<<<<<<< .mine
+    /*QString llat = QString::number(getLat());
+    if(getLat() < 1000)
+    {
+        llat = "0" + llat;
+    }
+    QString llon = QString::number(getLon());
+    if(getLon() < 10000)
+    {
+        llon = ("0" + llon);
+    }
+    if(getLon() < 1000)
+    {
+        llon = ("0" + llon);
+    }*/
+=======
     QString llat = getS_lat();
     QString llon = getS_lon();
+>>>>>>> .r33
 
     QString lb = QString("%1,%2,%3,%4,")            
-            .arg(llat)
+            .arg(pLat)
             .arg(getNs())
-            .arg(llon)
+            .arg(pLon)
             .arg(getEw());
     lstr.append(lb);
     lb = QString("%1,%2,%3,")
