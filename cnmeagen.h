@@ -77,12 +77,14 @@ private: //Members
     QString m_sRMC;
     QString m_sGGA;
     QString m_sGSA;
+    QString m_lat;
+    QString m_lon;
 
 private: //Functions
     QString makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
     QString makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
     QString makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView, QList<QGeoSatelliteInfo> *pUse);
-
+    void makeLatLon(QGeoCoordinate pos);
 };
 
 
@@ -138,7 +140,7 @@ public:
      void setDiff_units(QString value);
      double getDgps_age() const;
      void setDgps_age(double value);
-     QString makeSentence();
+     QString makeSentence(QString pLat, QString pLon);
      QString getS_lat() const;
      void setS_lat(const QString &value);
      QString getS_lon() const;
@@ -213,7 +215,7 @@ public:
      void setDeclin_ew(const QString &value);
      QString getMode() const;
      void setMode(const QString &value);
-     QString makeSentence();
+     QString makeSentence(QString pLat, QString pLon);
      QString getS_lat() const;
      void setS_lat(const QString &value);
      QString getS_lon() const;
