@@ -164,7 +164,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setEw("E");
     }
-    pack->setLon(fabs(pos->coordinate().longitude()*100));
+    pack->setLon(fabs(pos->coordinate().longitude()));
     if(pos->coordinate().latitude() < 0)
     {
         pack->setNs("S");
@@ -173,7 +173,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setNs("N");
     }
-    pack->setLat(fabs(pos->coordinate().latitude()*100));
+    pack->setLat(fabs(pos->coordinate().latitude()));
     pack->setMode("A");
     if(pos->hasAttribute(QGeoPositionInfo::Attribute::GroundSpeed))
     {
@@ -200,7 +200,7 @@ QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setHDOP(0);
     }
-    pack->setLat(fabs(pos->coordinate().latitude()*100));
+    pack->setLat(fabs(pos->coordinate().latitude()));
     if(pos->coordinate().latitude() < 0)
     {
         pack->setNs("S");
@@ -209,7 +209,7 @@ QString CNmeaGen::makeGGA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     {
         pack->setNs("N");
     }
-    pack->setLon(fabs(pos->coordinate().longitude()*100));
+    pack->setLon(fabs(pos->coordinate().longitude()));
     if(pos->coordinate().longitude() < 0)
     {
         pack->setEw("W");
@@ -270,6 +270,23 @@ double nmeaGGA::getLat() const
 void nmeaGGA::setLat(double value)
 {
     lat = value;
+    int deg = value;
+    double min = (value - deg)*.6;
+
+    s_lat = "";
+    if(deg < 10)
+    {
+        s_lat = "0";
+    }
+    s_lat.append("%1").arg(deg);
+    if(min < 10)
+    {
+        s_lat.append("0%1").arg(min);
+    }
+    else
+    {
+        s_lat.append("%1").arg(min);
+    }
 }
 
 QString nmeaGGA::getNs() const
@@ -290,6 +307,27 @@ double nmeaGGA::getLon() const
 void nmeaGGA::setLon(double value)
 {
     lon = value;
+    int deg = value;
+    double min = (value - deg)*.6;
+
+    s_lon = "";
+    if(deg < 100)
+    {
+        s_lon = "0";
+    }
+    if(deg < 10)
+    {
+        s_lon = "00";
+    }
+    s_lon.append("%1").arg(deg);
+    if(min < 10)
+    {
+        s_lon.append("0%1").arg(min);
+    }
+    else
+    {
+        s_lon.append("%1").arg(min);
+    }
 }
 
 QString nmeaGGA::getEw() const
@@ -386,20 +424,8 @@ QString nmeaGGA::makeSentence()
 {
     QString lstr = "GPGAA,";
     lstr.append(getUtc().time().toString("hhmmss") + ".00,");
-    QString llat = QString::number(getLat());
-    if(getLat() < 1000)
-    {
-        llat = "0" + llat;
-    }
-    QString llon = QString::number(getLon());
-    if(getLon() < 10000)
-    {
-        llon = ("0" + llon);
-    }
-    if(getLon() < 1000)
-    {
-        llon = ("0" + llon);
-    }
+    QString llat = getS_lat();
+    QString llon = getS_lon();
 
     QString lb = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,,,,*")
             .arg(llat)
@@ -430,6 +456,26 @@ QString nmeaGGA::makeSentence()
     return lstr;
 }
 
+
+QString nmeaGGA::getS_lat() const
+{
+    return s_lat;
+}
+
+void nmeaGGA::setS_lat(const QString &value)
+{
+    s_lat = value;
+}
+
+QString nmeaGGA::getS_lon() const
+{
+    return s_lon;
+}
+
+void nmeaGGA::setS_lon(const QString &value)
+{
+    s_lon = value;
+}
 QDateTime nmeaGGA::getUtc() const
 {
     return utc;
@@ -593,6 +639,23 @@ double nmeaRMC::getLat() const
 void nmeaRMC::setLat(double value)
 {
     lat = value;
+    int deg = value;
+    double min = (value - deg)*.6;
+
+    s_lat = "";
+    if(deg < 10)
+    {
+        s_lat = "0";
+    }
+    s_lat.append(QString("%1").arg(deg));
+    if(min < 10)
+    {
+        s_lat.append(QString("0%1").arg(min));
+    }
+    else
+    {
+        s_lat.append(QString("%1").arg(min));
+    }
 }
 
 QString nmeaRMC::getNs() const
@@ -613,6 +676,27 @@ double nmeaRMC::getLon() const
 void nmeaRMC::setLon(double value)
 {
     lon = value;
+    int deg = value;
+    double min = (value - deg)*.6;
+
+    s_lon = "";
+    if(deg < 100)
+    {
+        s_lon = "0";
+    }
+    if(deg < 10)
+    {
+        s_lon = "00";
+    }
+    s_lon.append(QString("%1").arg(deg));
+    if(min < 10)
+    {
+        s_lon.append(QString("0%1").arg(min));
+    }
+    else
+    {
+        s_lon.append(QString("%1").arg(min));
+    }
 }
 
 QString nmeaRMC::getEw() const
@@ -693,20 +777,8 @@ QString nmeaRMC::makeSentence()
     */
     QString lstr = "GPRMC,";
     lstr.append(this->getUtc().time().toString("HHmmss") + ".00," + this->getStatus() + ",");
-    QString llat = QString::number(getLat());
-    if(getLat() < 1000)
-    {
-        llat = "0" + llat;
-    }
-    QString llon = QString::number(getLon());
-    if(getLon() < 10000)
-    {
-        llon = ("0" + llon);
-    }
-    if(getLon() < 1000)
-    {
-        llon = ("0" + llon);
-    }
+    QString llat = getS_lat();
+    QString llon = getS_lon();
 
     QString lb = QString("%1,%2,%3,%4,")            
             .arg(llat)
@@ -739,6 +811,26 @@ QString nmeaRMC::makeSentence()
     return lstr;
 }
 
+
+QString nmeaRMC::getS_lat() const
+{
+    return s_lat;
+}
+
+void nmeaRMC::setS_lat(const QString &value)
+{
+    s_lat = value;
+}
+
+QString nmeaRMC::getS_lon() const
+{
+    return s_lon;
+}
+
+void nmeaRMC::setS_lon(const QString &value)
+{
+    s_lon = value;
+}
 QDateTime nmeaRMC::getUtc() const
 {
     return utc;

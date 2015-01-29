@@ -96,8 +96,10 @@ class nmeaGGA
 {
      QDateTime  utc;        /**< UTC of position (just time) */
      double     lat;        /**< Latitude in NDEG - [degree][min].[sec/60] */
+     QString    s_lat;
      QString    ns;         /**< [N]orth or [S]outh */
      double     lon;        /**< Longitude in NDEG - [degree][min].[sec/60] */
+     QString    s_lon;
      QString    ew;         /**< [E]ast or [W]est */
      int        sig;        /**< GPS quality indicator (0 = Invalid; 1 = Fix; 2 = Differential, 3 = Sensitive) */
      int        satinuse;   /**< Number of satellites in use (not those in view) */
@@ -137,6 +139,10 @@ public:
      double getDgps_age() const;
      void setDgps_age(double value);
      QString makeSentence();
+     QString getS_lat() const;
+     void setS_lat(const QString &value);
+     QString getS_lon() const;
+     void setS_lon(const QString &value);
 };
 
 
@@ -173,8 +179,10 @@ class nmeaRMC
     QDateTime  utc;       /**< UTC of position */
     QString    status;     /**< Status (A = active or V = void) */
      double     lat;        /**< Latitude in NDEG - [degree][min].[sec/60] */
+     QString    s_lat;
      QString    ns;         /**< [N]orth or [S]outh */
      double     lon;        /**< Longitude in NDEG - [degree][min].[sec/60] */
+     QString    s_lon;
      QString    ew;         /**< [E]ast or [W]est */
      double     speed;      /**< Speed over the ground in knots */
      double     direction;  /**< Track angle in degrees True */
@@ -206,6 +214,10 @@ public:
      QString getMode() const;
      void setMode(const QString &value);
      QString makeSentence();
+     QString getS_lat() const;
+     void setS_lat(const QString &value);
+     QString getS_lon() const;
+     void setS_lon(const QString &value);
 };
 
 #endif // CNMEAGEN_H
