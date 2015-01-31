@@ -60,7 +60,8 @@ void GeoTrans::on_cmdStart_clicked()
 }
 
 void GeoTrans::on_Update(const QGeoPositionInfo &update)
-{    
+{
+    ui->txtState->setText("Receiving GPS data:\n");
     m_nmea->setSGSA("");
     m_nmea->setSGGA("");
     m_nmea->setSRMC("");

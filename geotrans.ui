@@ -51,7 +51,7 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>IP-Adresse:</string>
+         <string>IP-Address:</string>
         </property>
        </widget>
       </item>
@@ -79,14 +79,14 @@
       <item>
        <widget class="QPushButton" name="cmdStart">
         <property name="text">
-         <string>Starten</string>
+         <string>Start</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="cmdQuit">
         <property name="text">
-         <string>Beenden</string>
+         <string>Quit App</string>
         </property>
        </widget>
       </item>
