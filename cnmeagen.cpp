@@ -235,7 +235,7 @@ QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     }
     else
     {
-        pack->setHDOP(0);
+        pack->setHDOP(1);
     }
     pack->setFix_type(pos->coordinate().type());
     if(pos->hasAttribute(QGeoPositionInfo::Attribute::VerticalAccuracy))
@@ -244,9 +244,9 @@ QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     }
     else
     {
-        pack->setVDOP(0);
+        pack->setVDOP(10);
     }
-    pack->setPDOP(pack->getHDOP()+pack->getVDOP());
+    pack->setPDOP((pack->getHDOP()+pack->getVDOP())/2);
     QList<int> satlst;
     for(int cnt = 0; cnt < pUse->count(); cnt++)
     {
@@ -420,7 +420,7 @@ void nmeaGGA::setDgps_age(double value)
 
 QString nmeaGGA::makeSentence(QString pLat, QString pLon)
 {
-    QString lstr = "GPGAA,";
+    QString lstr = "GPGGA,";
     lstr.append(getUtc().time().toString("hhmmss") + ".00,");
     QString llat = QString::number(getLat());
     if(getLat() < 1000)
