@@ -60,9 +60,7 @@ void GeoTrans::on_cmdStart_clicked()
 }
 
 void GeoTrans::on_Update(const QGeoPositionInfo &update)
-{
-    QString lpos = update.coordinate().toString(QGeoCoordinate::CoordinateFormat::DegreesMinutes);
-    m_socket->writeDatagram(lpos.toLocal8Bit(),*m_host,m_settings->value("Port").toInt());
+{    
     m_nmea->setSGSA("");
     m_nmea->setSGGA("");
     m_nmea->setSRMC("");

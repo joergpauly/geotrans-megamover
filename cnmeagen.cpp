@@ -178,7 +178,7 @@ QString CNmeaGen::makeRMC(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
     pack->setMode("A");
     if(pos->hasAttribute(QGeoPositionInfo::Attribute::GroundSpeed))
     {
-        pack->setSpeed(pos->attribute(QGeoPositionInfo::Attribute::GroundSpeed));
+        pack->setSpeed(pos->attribute(QGeoPositionInfo::Attribute::GroundSpeed) * 1.9438445);
     }
     pack->setUtc(pos->timestamp());
     pack->setStatus("A");
@@ -258,57 +258,37 @@ QString CNmeaGen::makeGSA(QGeoPositionInfo *pos, QList<QGeoSatelliteInfo> *pView
 
 void CNmeaGen::makeLatLon(QGeoCoordinate pos)
 {
-    QString lpstring = pos.toString(QGeoCoordinate::CoordinateFormat::DegreesMinutes);
-    int lpos = lpstring.compare("°");
-    int lLatDeg = fabs(lpstring.toInt());
-    QString lbuf = "";
+    int lLatDeg = fabs(pos.latitude());
+    double lLatMin = (fabs(pos.latitude()) - lLatDeg) * 60;
+    m_lat = "";
     if(lLatDeg < 10)
     {
-        lbuf = "0";
+        m_lat = "0";
     }
-    lbuf.append(QString("%1").arg(lLatDeg));
-    lpstring = lpstring.right(lpstring.length() - lpos);
-
-    int lLatMin = lpstring.toInt();
+    m_lat.append(QString("%1").arg(lLatDeg));
     if(lLatMin < 10)
     {
-        lbuf.append("0");
+        m_lat.append("0");
     }
-    lbuf.append(QString("%1.").arg(lLatMin));
-    lpos = lpstring.compare(".");
-    lpstring = lpstring.right(lpstring.length() - lpos);
+    m_lat.append(QString("%1").arg(lLatMin));
 
-    int lLatMdec = lpstring.toInt();
-    lbuf.append(QString("%1").arg(lLatMdec));
-    m_lat = lbuf;
-    lpstring = lpstring.right(lpstring.length() - (lpos + 1));
-
-    lbuf = "";
-    lpos = lpstring.compare("°");
-    int lLonDeg = fabs(lpstring.toInt());
+    int lLonDeg = fabs(pos.longitude());
+    double lLonMin = (fabs(pos.longitude()) - lLonDeg) * 60;
+    m_lon = "";
     if(lLonDeg < 100)
     {
-        lbuf = "0";
+        m_lon = "0";
     }
     if(lLonDeg < 10)
     {
-        lbuf = "00";
+        m_lon = "00";
     }
-    lbuf.append(QString("%1").arg(lLonDeg));
-    lpstring = lpstring.right(lpstring.length() - lpos);
-
-    int lLonMin = lpstring.toInt();
+    m_lon.append(QString("%1").arg(lLonDeg));
     if(lLonMin < 10)
     {
-        lbuf.append("0");
+        m_lon.append("0");
     }
-    lbuf.append(QString("%1.").arg(lLonMin));
-    lpos = lpstring.compare(".");
-    lpstring = lpstring.right(lpstring.length() - lpos);
-    int lLonMdec = lpstring.toInt();
-    lbuf.append(QString("%1").arg(lLonMdec));
-    m_lon = lbuf;
-
+    m_lon.append(QString("%1").arg(lLonMin));
 }
 
 
